@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# checkmk_crl_url - Checks the validity of a CRL.
+#
+# Copyright (C) 2021  Marius Rieder <marius.rieder@scs.ch>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+import sys
+import argparse
+import urllib.request
+import cryptography.x509
+from datetime import datetime
+
+parser = argparse.ArgumentParser(description='Check a CRL URL')
+parser.formatter_class = argparse.RawTextHelpFormatter
+parser.add_argument("--verbose", '-v', action="store_true", default=False)
+parser.add_argument('--url',
+                    dest='url',
+                    required=True,
+                    help='Https(s) URL pointing to the CRL file.')
+parser.add_argument('--warning',
+                    dest='warning',
+                    default=15*86400,
+                    type=int,
+                    help='Limit in seconds for the check to be warning. (Default to: 1296000 (15 days))')
+parser.add_argument('--critical',
+                    dest='critical',
+                    default=10*86400,
+                    type=int,
+                    help='Limit in seconds for the check to be critical. (Default to: 864000 (10 days))')
+parser.add_argument('--timeout',
+                    dest='timeout',
+                    default=10,
+                    type=int,
+                    help='Timeout for the http request. (Default to: 10)')
+args = parser.parse_args()
+
+
+try:
+    if args.verbose:
+        print('Fetching %s' % args.url)
+    resp = urllib.request.urlopen(args.url, timeout=args.timeout)
+    data = resp.read()
+except urllib.error.HTTPError as e:
+    print('Critical: CRL %s not found - %s' % (args.url, e))
+    sys.exit(2)
+
+try:
+    crl = cryptography.x509.load_pem_x509_crl(data)
+    
+    if args.verbose:
+        print('Parsed PEM CRL')
+except:
+    try:
+        crl = cryptography.x509.load_der_x509_crl(data)
+
+        if args.verbose:
+            print('Parsed DER CRL')
+    except:
+        print('Critical: Could not parse crl')
+        sys.exit(2)
+
+issuer = crl.issuer.rfc4514_string()
+now = datetime.utcnow()
+ttl = crl.next_update - now
+ttl_seconds = ttl.total_seconds()
+
+perfdata = 'ttl=%ds;%d;%d;' % (ttl_seconds, args.warning, args.critical)
+
+if crl.last_update > now:
+    print('Critical: CRL for %s is from the future. Last Update: %s UTC | %s' % (issuer, crl.last_update, perfdata))
+    sys.exit(2)
+
+if ttl_seconds < args.critical:
+    print('Critical: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+    sys.exit(2)
+
+if ttl_seconds < args.warning:
+    print('Warning: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+    sys.exit(1)
+
+print('OK: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+sys.exit(0)

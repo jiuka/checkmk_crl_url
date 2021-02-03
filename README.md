@@ -1,8 +1,10 @@
-# Checkmk extension for Phion-MIB
+# Checkmk extension for CRL URLs
 
-Checks based on the Phion-MIB for the Barracuda CloudGen Firewall.
+Checks the validity and freshness of a CRL.
 
 ![build](https://github.com/jiuka/checkmk_phion/workflows/build/badge.svg)
 ![flake8](https://github.com/jiuka/checkmk_phion/workflows/Lint/badge.svg?branch=master)
 
 Description
+
+Fetches a CRL by http(s) and ensures its neither from the future not expires to soon.

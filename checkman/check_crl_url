@@ -1,0 +1,14 @@
+title: CRL freshness test
+agents: active
+catalog: agentless
+license: GPL
+
+item:
+ The name of the CRL given in the configuration.
+
+description:
+ This performs an active check of a CRL which is accessibale by http(s).
+
+ It checks the publishing and expiration date of the CRL against the configured values.
+
+ This check can be configured by Wato.

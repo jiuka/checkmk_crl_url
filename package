@@ -1,21 +1,22 @@
 {
-    'author': u'',
-    'description': u'',
-    'download_url': '',
+    'author': u'Marius Rieder <marius.rieder@durchmesser.ch>',
+    'description': u'Fetches a CRL and checks if it is fresh.',
+    'download_url': 'https://github.com/jiuka/checkmk_crl_url/releases',
     'files': {
         'agent_based': [],
         'agents': [],
-        'checkman': [],
-        'checks': [],
+        'checkman': ['check_crl_url'],
+        'checks': ['check_crl_url'],
         'doc': [],
         'inventory': [],
         'notifications': [],
         'pnp-templates': [],
-        'web': []
+        'web': ['plugins/wato/check_crl_url.py'],
+        'lib': ['nagios/plugins/check_crl_url'],
     },
-    'name': '',
-    'title': u'',
-    'version': '0.1',
-    'version.min_required': '2.0.0',
+    'name': 'crl_url',
+    'title': u'Check x509 CRL freshness',
+    'version': '1.0',
+    'version.min_required': '2.0.0b5',
     'version.packaged': '2.0.0'
 }
