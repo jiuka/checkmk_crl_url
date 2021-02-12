@@ -34,12 +34,12 @@ parser.add_argument('--url',
                     help='Https(s) URL pointing to the CRL file.')
 parser.add_argument('--warning',
                     dest='warning',
-                    default=15*86400,
+                    default=15 * 86400,
                     type=int,
                     help='Limit in seconds for the check to be warning. (Default to: 1296000 (15 days))')
 parser.add_argument('--critical',
                     dest='critical',
-                    default=10*86400,
+                    default=10 * 86400,
                     type=int,
                     help='Limit in seconds for the check to be critical. (Default to: 864000 (10 days))')
 parser.add_argument('--timeout',
@@ -61,16 +61,16 @@ except urllib.error.HTTPError as e:
 
 try:
     crl = cryptography.x509.load_pem_x509_crl(data)
-    
+
     if args.verbose:
         print('Parsed PEM CRL')
-except:
+except Exception:
     try:
         crl = cryptography.x509.load_der_x509_crl(data)
 
         if args.verbose:
             print('Parsed DER CRL')
-    except:
+    except Exception:
         print('Critical: Could not parse crl')
         sys.exit(2)
 
