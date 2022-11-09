@@ -19,11 +19,17 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 def check_crl_url_desc(params):
-    return "CRL %s" % (params['name'])
+    if "name" in params:
+        return "CRL %s" % (params['name'])
+    else:
+        return "CRL %s" % (params['url'])
 
 
 def check_crl_url_arguments(params):
-    return "--url %s --warning %s --critical %s" % (params['url'], params['limit'][0], params['limit'][1])
+    if "limit" in params:
+        return "--url %s --warning %s --critical %s" % (params['url'], params['limit'][0], params['limit'][1])
+    else:
+        return "--url %s --warning 15 --critical 10" % (params['url'])
 
 
 active_check_info['crl_url'] = {
