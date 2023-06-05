@@ -36,6 +36,7 @@ try:
 except Exception:
     from cmk.gui.plugins.wato.active_checks.common import RulespecGroupActiveChecks
 
+
 def _valuespec_active_checks_crl_url():
     return Dictionary(
         title = "Check CRL Expiration",
