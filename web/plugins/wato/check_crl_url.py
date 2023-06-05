@@ -31,8 +31,10 @@ from cmk.gui.plugins.wato import (
     rulespec_registry,
     HostRulespec,
 )
-from cmk.gui.plugins.wato.active_checks import RulespecGroupActiveChecks
-
+try:
+    from cmk.gui.plugins.wato.active_checks import RulespecGroupActiveChecks
+except Exception:
+    from cmk.gui.plugins.wato.active_checks.common import RulespecGroupActiveChecks
 
 def _valuespec_active_checks_crl_url():
     return Dictionary(
