@@ -2,8 +2,8 @@
 
 Checks the validity and freshness of a CRL.
 
-![build](https://github.com/jiuka/checkmk_phion/workflows/build/badge.svg)
-![flake8](https://github.com/jiuka/checkmk_phion/workflows/Lint/badge.svg?branch=master)
+![build](https://github.com/jiuka/checkmk_crl_url/workflows/build/badge.svg)
+![flake8](https://github.com/jiuka/checkmk_crl_url/workflows/Lint/badge.svg?branch=master)
 
 Description
 
