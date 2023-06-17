@@ -27,8 +27,8 @@ def check_crl_url_arguments(params):
 
 
 active_check_info['crl_url'] = {
-    "command_line"        : '$USER2$/check_crl_url $ARG1$',
-    "argument_function"   : check_crl_url_arguments,
-    "service_description" : check_crl_url_desc,
-    "has_perfdata"        : True,
+    "command_line": '$USER2$/check_crl_url $ARG1$',
+    "argument_function": check_crl_url_arguments,
+    "service_description": check_crl_url_desc,
+    "has_perfdata": True,
 }

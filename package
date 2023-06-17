@@ -16,8 +16,8 @@
     },
     'name': 'crl_url',
     'title': u'Check x509 CRL freshness',
-    'version': '1.1',
+    'version': '1.1.1',
     'version.min_required': '2.0.0',
-    'version.packaged': '2.0.0',
+    'version.packaged': '2.2.0',
     'version.usable_until': '2.3.0'
 }
