@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 #
 # checkmk_crl_url - Checks the validity of a CRL.
@@ -21,7 +20,7 @@
 
 import sys
 import argparse
-import urllib.request
+import requests
 import cryptography.x509
 from datetime import datetime
 
@@ -32,6 +31,10 @@ parser.add_argument('--url',
                     dest='url',
                     required=True,
                     help='Https(s) URL pointing to the CRL file.')
+parser.add_argument('--proxy',
+                    dest='proxy',
+                    default=None,
+                    help='http proxy')
 parser.add_argument('--warning',
                     dest='warning',
                     default=15 * 86400,
@@ -53,9 +56,9 @@ args = parser.parse_args()
 try:
     if args.verbose:
         print('Fetching %s' % args.url)
-    resp = urllib.request.urlopen(args.url, timeout=args.timeout)
-    data = resp.read()
-except urllib.error.HTTPError as e:
+    resp = requests.get(args.url, timeout=args.timeout, proxies={"http": args.proxy,"https": args.proxy})
+    data = resp.content
+except requests.exceptions.HTTPError as e:
     print('Critical: CRL %s not found - %s' % (args.url, e))
     sys.exit(2)
 
