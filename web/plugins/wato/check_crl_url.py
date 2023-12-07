@@ -75,7 +75,8 @@ def _valuespec_active_checks_crl_url():
                     ]
                 ),
             ),
-        ]
+        ],
+        required_keys=['name', 'url'],
     )
 
 
