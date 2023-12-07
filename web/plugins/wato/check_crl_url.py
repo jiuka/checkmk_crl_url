@@ -49,19 +49,19 @@ def _valuespec_active_checks_crl_url():
                     allow_empty = False
                 ),
             ),
-            (
-                'proxy',
-                HTTPUrl(
-                    title = _("Proxy"),
-                    help = _("Leave empty if none is neded. If a proxy is needed for the query it can be specified here. Will be uses as HTTP & HTTPS proxy."),
-                    allow_empty = False
-                ),
-            ),
-            (
+           (
                 'url',
                 HTTPUrl(
                     title = _("CRL Distribution Point Url"),
                     help = _("The URL where the CRL should be checkd at."),
+                    allow_empty = False
+                ),
+            ),
+            (
+                'proxy',
+                HTTPUrl(
+                    title = _("Proxy"),
+                    help = _("Do not check this box if none is neded. If a proxy is needed for the query it can be specified here. Will be uses as HTTP & HTTPS proxy."),
                     allow_empty = False
                 ),
             ),
