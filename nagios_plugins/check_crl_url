@@ -35,7 +35,7 @@ parser.add_argument('--url',
 parser.add_argument('--proxy',
                     dest='proxy',
                     default=None,
-                    help='http proxy')
+                    help='Http(s) proxy for the query of the CRL URL. Its used as Http and Https proxy. If non is set no proxy will be used')
 parser.add_argument('--warning',
                     dest='warning',
                     default=15 * 86400,
