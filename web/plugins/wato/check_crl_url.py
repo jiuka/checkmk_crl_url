@@ -49,7 +49,7 @@ def _valuespec_active_checks_crl_url():
                     allow_empty = False
                 ),
             ),
-           (
+            (
                 'url',
                 HTTPUrl(
                     title = _("CRL Distribution Point Url"),
