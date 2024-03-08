@@ -39,7 +39,7 @@ except Exception:
 
 def _valuespec_active_checks_crl_url():
     return Dictionary(
-        title = "Check CRL Expiration",
+        title = "Check CRL Expiration OLD",
         help = "Check if a CRL given as URL is about to expire.",
         elements = [
             (
@@ -84,6 +84,6 @@ rulespec_registry.register(
     HostRulespec(
         group=RulespecGroupActiveChecks,
         match_type='all',
-        name='active_checks:crl_url',
+        name='active_checks:crl_url2',
         valuespec=_valuespec_active_checks_crl_url,
     ))

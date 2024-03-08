@@ -3,7 +3,7 @@
 #
 # checkmk_crl_url - Checks the validity of a CRL.
 #
-# Copyright (C) 2021  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2021-2024  Marius Rieder <marius.rieder@durchmesser.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ import sys
 import argparse
 import requests
 import cryptography.x509
-from datetime import datetime
+from datetime import datetime, UTC
 
 parser = argparse.ArgumentParser(description='Check a CRL URL')
 parser.formatter_class = argparse.RawTextHelpFormatter
@@ -57,7 +57,7 @@ args = parser.parse_args()
 try:
     if args.verbose:
         print('Fetching %s' % args.url)
-    resp = requests.get(args.url, timeout=args.timeout, proxies={"http": args.proxy,"https": args.proxy})
+    resp = requests.get(args.url, timeout=args.timeout, proxies={"http": args.proxy, "https": args.proxy})
     data = resp.content
 except requests.exceptions.HTTPError as e:
     print('Critical: CRL %s not found - %s' % (args.url, e))
@@ -79,23 +79,23 @@ except Exception:
         sys.exit(2)
 
 issuer = crl.issuer.rfc4514_string()
-now = datetime.utcnow()
-ttl = crl.next_update - now
+now = datetime.now(UTC)
+ttl = crl.next_update_utc - now
 ttl_seconds = ttl.total_seconds()
 
 perfdata = 'ttl=%ds;%d;%d;' % (ttl_seconds, args.warning, args.critical)
 
-if crl.last_update > now:
-    print('Critical: CRL for %s is from the future. Last Update: %s UTC | %s' % (issuer, crl.last_update, perfdata))
+if crl.last_update_utc > now:
+    print('Critical: CRL for %s is from the future. Last Update: %s UTC | %s' % (issuer, crl.last_update_utc, perfdata))
     sys.exit(2)
 
 if ttl_seconds < args.critical:
-    print('Critical: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+    print('Critical: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update_utc, perfdata))
     sys.exit(2)
 
 if ttl_seconds < args.warning:
-    print('Warning: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+    print('Warning: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update_utc, perfdata))
     sys.exit(1)
 
-print('OK: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update, perfdata))
+print('OK: CRL for %s expires in: %s (%s UTC) | %s' % (issuer, ttl, crl.next_update_utc, perfdata))
 sys.exit(0)

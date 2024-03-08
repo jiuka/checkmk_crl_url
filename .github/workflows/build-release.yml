@@ -11,30 +11,33 @@ jobs:
     name: Build Release Package
     runs-on: ubuntu-latest
     container:
-      image: checkmk/check-mk-raw:2.2.0-latest
+      image: checkmk/check-mk-raw:2.3.0-latest
     permissions:
       contents: write
-
-    env:
-      OMD_ROOT: /omd/sites/cmk
-      OMD_SITE: cmk
-      CMK_SITE_ID: cmk
-      WORKSPACE: ${{ github.workspace }}
 
     steps:
       - name: Initialize Checkmk Site
         run: /docker-entrypoint.sh /bin/true
-      - uses: actions/checkout@v3
-      - name: Setup links
-        run: .devcontainer/symlink.sh
-      - name: Update GITHUB_PATH
-        run: echo "/omd/sites/cmk/bin" >> $GITHUB_PATH
+      - uses: actions/checkout@v4
+      - name: Parse Package File
+        run: |
+          NAME=$(python3 -c 'print(eval(open("package").read())["name"])')
+          VERSION=$(python3 -c 'print(eval(open("package").read())["version"])')
+          echo "CMKPKG_NAME=$NAME" >> "$GITHUB_ENV"
+          echo "CMKPKG_VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Install Plugin
+        run: |
+          rsync -aC --chown=cmk:cmk $GITHUB_WORKSPACE/ /omd/sites/cmk/local/lib/python3/cmk_addons/plugins/$CMKPKG_NAME/
       - name: Build Extension
-        run: .devcontainer/build.sh
+        run: |
+          su -l -c "mkp -v package $GITHUB_WORKSPACE/package" cmk
+          cp /omd/sites/cmk/var/check_mk/packages_local/${CMKPKG_NAME}-${CMKPKG_VERSION}.mkp .
+          echo "pkgfile=${CMKPKG_NAME}-${CMKPKG_VERSION}.mkp" >> $GITHUB_OUTPUT
+          echo "pkgname=${CMKPKG_NAME}" >> $GITHUB_OUTPUT
+          echo "pkgversion=${CMKPKG_VERSION}" >> $GITHUB_OUTPUT
         id: cmkpkg
-
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           release_name: Release ${{ github.ref }}
           draft: false
