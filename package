@@ -5,6 +5,7 @@
     'files': {
         'cmk_addons_plugins': [
             'crl_url/checkman/check_crl_url',
+            'crl_url/graphing/crl_url.py',
             'crl_url/libexec/check_crl_url',
             'crl_url/rulesets/crl_url.py',
             'crl_url/server_side_calls/crl_url.py',
