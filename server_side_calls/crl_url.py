@@ -44,7 +44,7 @@ def commands_function(
     if params.proxy:
         command_arguments += ["--proxy", params.proxy]
     if params.limit[0] == 'fixed':
-        command_arguments += ["--warning", params.limit[1][0], "--critical", params.limit[1][1]]
+        command_arguments += ["--warning", int(params.limit[1][0]), "--critical", int(params.limit[1][1])]
 
     yield ActiveCheckCommand(
         service_description=f"CRL {params.name}",
