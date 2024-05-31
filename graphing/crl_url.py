@@ -2,7 +2,7 @@
 #
 # checkmk_crl_url - Checks the validity of a CRL.
 #
-# Copyright (C) 2021  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2021-2024  Marius Rieder <marius.rieder@durchmesser.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,20 +18,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-def check_crl_url_desc(params):
-    return "CRL %s" % (params['name'])
+from cmk.graphing.v1 import graphs, metrics, perfometers, Title
 
+metric_ttl = metrics.Metric(
+    name='ttl',
+    title=Title('CRL Lifetime'),
+    unit=metrics.Unit(metrics.TimeNotation()),
+    color=metrics.Color.LIGHT_BLUE,
+)
 
-def check_crl_url_arguments(params):
-    args = f"--url {params['url']}"
-    if "proxy" in params: args += f" --proxy {params['proxy']}"
-    if "limit" in params: args += f" --warning {params['limit'][0]} --critical {params['limit'][1]}"
-    return args
+perfometer_ttl = perfometers.Perfometer(
+    name='ttl',
+    focus_range=perfometers.FocusRange(perfometers.Closed(0), perfometers.Open(10)),
+    segments=['ttl'],
+)
 
-
-active_check_info['crl_url'] = {
-    "command_line": '$USER2$/check_crl_url $ARG1$',
-    "argument_function": check_crl_url_arguments,
-    "service_description": check_crl_url_desc,
-    "has_perfdata": True,
-}
+graph_ttl = graphs.Graph(
+    name='crl_url',
+    title=Title('CRL Lifetime'),
+    compound_lines=['ttl'],
+    simple_lines=[
+        metrics.WarningOf('ttl'),
+        metrics.CriticalOf('ttl'),
+    ],
+)

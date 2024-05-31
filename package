@@ -3,21 +3,18 @@
     'description': u'Fetches a CRL and checks if it is fresh.',
     'download_url': 'https://github.com/jiuka/checkmk_crl_url/releases',
     'files': {
-        'agent_based': [],
-        'agents': [],
-        'checkman': ['check_crl_url'],
-        'checks': ['check_crl_url'],
-        'doc': [],
-        'inventory': [],
-        'notifications': [],
-        'pnp-templates': [],
-        'web': ['plugins/wato/check_crl_url.py'],
-        'lib': ['nagios/plugins/check_crl_url'],
+        'cmk_addons_plugins': [
+            'crl_url/checkman/check_crl_url',
+            'crl_url/graphing/crl_url.py',
+            'crl_url/libexec/check_crl_url',
+            'crl_url/rulesets/crl_url.py',
+            'crl_url/server_side_calls/crl_url.py',
+        ],
     },
     'name': 'crl_url',
     'title': u'Check x509 CRL freshness',
-    'version': '1.1.2',
-    'version.min_required': '2.0.0',
-    'version.packaged': '2.2.0',
-    'version.usable_until': '2.3.0'
+    'version': '2.3.0',
+    'version.min_required': '2.3.0p3',
+    'version.packaged': '2.3.0p3',
+    'version.usable_until': '2.4.0'
 }
