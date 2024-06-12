@@ -62,6 +62,13 @@ try:
 except requests.exceptions.HTTPError as e:
     print('Critical: CRL %s not found - %s' % (args.url, e))
     sys.exit(2)
+except requests.exceptions.ConnectionError as e:
+    print('Critical: CRL %s connection error - %s' % (args.url, e))
+    sys.exit(2)
+except Exception as e:
+    print('Critical: CRL %s - %s' % (args.url, e))
+    sys.exit(2)
+
 
 try:
     crl = cryptography.x509.load_pem_x509_crl(data)
