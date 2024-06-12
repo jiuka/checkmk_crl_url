@@ -53,6 +53,7 @@ def _form_active_checks_crl_url() -> Dictionary:
                     custom_validate=(validators.Url(
                         protocols=[validators.UrlProtocol.HTTP, validators.UrlProtocol.HTTPS]
                     ),),
+                    macro_support=True,
                 ),
                 required=True,
             ),

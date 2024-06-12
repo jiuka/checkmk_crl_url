@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from cmk.server_side_calls.v1 import (
     ActiveCheckCommand,
     ActiveCheckConfig,
+    replace_macros,
 )
 
 
@@ -37,9 +38,9 @@ class Params(BaseModel, frozen=True):
 
 def commands_function(
     params: Params,
-    _host_config: object,
+    host_config: object,
 ) -> Iterator[ActiveCheckCommand]:
-    command_arguments = ['--url', params.url]
+    command_arguments = ['--url', replace_macros(params.url, host_config.macros)]
     if params.proxy:
         command_arguments += ['--proxy', params.proxy]
     if params.limit[0] == 'fixed':
