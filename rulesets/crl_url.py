@@ -19,20 +19,29 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-from cmk.rulesets.v1 import Help, Title
+from collections.abc import Mapping
+from cmk.rulesets.v1 import Help, Title, Label
 from cmk.rulesets.v1.form_specs import (
+    DefaultValue,
     DictElement,
     Dictionary,
     InputHint,
     LevelDirection,
     migrate_to_float_simple_levels,
     SimpleLevels,
+    SingleChoice,
+    SingleChoiceElement,
     String,
-    TimeSpan,
     TimeMagnitude,
+    TimeSpan,
     validators,
 )
 from cmk.rulesets.v1.rule_specs import ActiveCheck, Topic
+
+
+def _migrate_crl_url(object) -> Mapping[str, object]:
+    object.setdefault('prefix', 'crl')
+    return object
 
 
 def _form_active_checks_crl_url() -> Dictionary:
@@ -41,8 +50,30 @@ def _form_active_checks_crl_url() -> Dictionary:
         elements={
             'name': DictElement(
                 parameter_form=String(
-                    title=Title('Name'),
+                    title=Title('Service Name'),
                     custom_validate=(validators.LengthInRange(min_value=1),),
+                ),
+                required=True,
+            ),
+            'prefix': DictElement(
+                parameter_form=SingleChoice(
+                    label=Label('Prefix'),
+                    help_text=Help(
+                        'The prefix is automatically added to each service to be able to organize them. '
+                        'The prefix is static and will be CRL. Alternatively, you may choose not to use '
+                        'the prefix option.'
+                    ),
+                    elements=[
+                        SingleChoiceElement(
+                            name='crl',
+                            title=Title('Use "CRL" as service name prefix'),
+                        ),
+                        SingleChoiceElement(
+                            name='none',
+                            title=Title('Do not use a prefix'),
+                        ),
+                    ],
+                    prefill=DefaultValue('crl'),
                 ),
                 required=True,
             ),
@@ -53,6 +84,7 @@ def _form_active_checks_crl_url() -> Dictionary:
                     custom_validate=(validators.Url(
                         protocols=[validators.UrlProtocol.HTTP, validators.UrlProtocol.HTTPS]
                     ),),
+                    prefill=InputHint('https://$HOSTNAME$/crl.pem'),
                     macro_support=True,
                 ),
                 required=True,
@@ -67,6 +99,7 @@ def _form_active_checks_crl_url() -> Dictionary:
                     custom_validate=(validators.Url(
                         protocols=[validators.UrlProtocol.HTTP, validators.UrlProtocol.HTTPS]
                     ),),
+                    prefill=InputHint('https://proxy.example.com'),
                 ),
                 required=False,
             ),
@@ -83,12 +116,13 @@ def _form_active_checks_crl_url() -> Dictionary:
                 required=True,
             ),
         },
+        migrate=_migrate_crl_url,
     )
 
 
 rule_spec_crl_url = ActiveCheck(
     title=Title('Check CRL Expiration'),
     topic=Topic.GENERAL,
-    name="crl_url",
+    name='crl_url',
     parameter_form=_form_active_checks_crl_url,
 )

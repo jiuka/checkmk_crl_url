@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from collections.abc import Iterator
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -30,6 +31,7 @@ from cmk.server_side_calls.v1 import (
 
 
 class Params(BaseModel, frozen=True):
+    prefix: Literal['crl'] | Literal['none'] = 'crl'
     name: str
     url: str
     proxy: str | None = None
@@ -47,7 +49,7 @@ def commands_function(
         command_arguments += ['--warning', str(int(params.limit[1][0])), "--critical", str(int(params.limit[1][1]))]
 
     yield ActiveCheckCommand(
-        service_description=f"CRL {params.name}",
+        service_description=f"CRL {params.name}" if params.prefix == 'crl' else params.name,
         command_arguments=command_arguments,
     )
 
