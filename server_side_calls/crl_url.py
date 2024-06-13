@@ -19,16 +19,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from collections.abc import Iterator
+from typing import Literal
 
 from pydantic import BaseModel
 
 from cmk.server_side_calls.v1 import (
     ActiveCheckCommand,
     ActiveCheckConfig,
+    replace_macros,
 )
 
 
 class Params(BaseModel, frozen=True):
+    prefix: Literal['crl'] | Literal['none'] = 'crl'
     name: str
     url: str
     proxy: str | None = None
@@ -37,16 +40,16 @@ class Params(BaseModel, frozen=True):
 
 def commands_function(
     params: Params,
-    _host_config: object,
+    host_config: object,
 ) -> Iterator[ActiveCheckCommand]:
-    command_arguments = ['--url', params.url]
+    command_arguments = ['--url', replace_macros(params.url, host_config.macros)]
     if params.proxy:
         command_arguments += ['--proxy', params.proxy]
     if params.limit[0] == 'fixed':
         command_arguments += ['--warning', str(int(params.limit[1][0])), "--critical", str(int(params.limit[1][1]))]
 
     yield ActiveCheckCommand(
-        service_description=f"CRL {params.name}",
+        service_description=f"CRL {params.name}" if params.prefix == 'crl' else params.name,
         command_arguments=command_arguments,
     )
 
