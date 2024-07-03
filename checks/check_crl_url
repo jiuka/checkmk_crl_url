@@ -23,7 +23,7 @@ def check_crl_url_desc(params):
 
 
 def check_crl_url_arguments(params):
-    args = f"--url {params['url']}"
+    args = f"--url '{params['url']}'"
     if "proxy" in params: args += f" --proxy {params['proxy']}"
     if "limit" in params: args += f" --warning {params['limit'][0]} --critical {params['limit'][1]}"
     return args
