@@ -1,7 +1,8 @@
-title: CRL freshness test
+title: CRL Freshness
 agents: active
 catalog: agentless
 license: GPL
+distribution: https://github.com/jiuka/checkmk_crl_url
 
 item:
  The name of the CRL given in the configuration.
