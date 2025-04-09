@@ -18,13 +18,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import shlex
+
 def check_crl_url_desc(params):
     return "CRL %s" % (params['name'])
 
 
 def check_crl_url_arguments(params):
-    args = f"--url '{params['url']}'"
-    if "proxy" in params: args += f" --proxy {params['proxy']}"
+    args = f"--url {shlex.quote(params['url'])}"
+    if "proxy" in params: args += f" --proxy {shlex.quote(params['proxy'])}"
     if "limit" in params: args += f" --warning {params['limit'][0]} --critical {params['limit'][1]}"
     return args
 
