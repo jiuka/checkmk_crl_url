@@ -18,6 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import shlex
 from collections.abc import Iterator
 from typing import Literal
 
@@ -42,9 +43,9 @@ def commands_function(
     params: Params,
     host_config: object,
 ) -> Iterator[ActiveCheckCommand]:
-    command_arguments = ['--url', replace_macros(params.url, host_config.macros)]
+    command_arguments = ['--url', shlex.quote(replace_macros(params.url, host_config.macros))]
     if params.proxy:
-        command_arguments += ['--proxy', params.proxy]
+        command_arguments += ['--proxy', shlex.quote(params.proxy)]
     if params.limit[0] == 'fixed':
         command_arguments += ['--warning', str(int(params.limit[1][0])), "--critical", str(int(params.limit[1][1]))]
 
