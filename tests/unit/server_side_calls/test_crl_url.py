@@ -44,6 +44,10 @@ def test_model_validate(input):
         {'name': 'OnlyFoo', 'url': 'https://$HOSTNAME$/foo', 'limit': ('no_levels', None), 'prefix': 'none'},
         [ActiveCheckCommand(service_description='OnlyFoo', command_arguments=['--url', 'https://pytest/foo'])]
     ],
+    [
+        {'name': 'OnlyFoo', 'url': 'https://$HOSTNAME$/foo/Issuing_CA(1).crl', 'limit': ('no_levels', None), 'prefix': 'none'},
+        [ActiveCheckCommand(service_description='OnlyFoo', command_arguments=['--url', "'https://pytest/foo/Issuing_CA(1).crl'"])]
+    ],
 ])
 def test_commands_function(input, commands):
     host_config = HostConfig(name='pytest', macros={'$HOSTNAME$': 'pytest'})
